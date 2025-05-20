@@ -1,3 +1,7 @@
+package com._k7.DSI.PPAI.grupo4.Entidades;
+
+import java.sql.Date;
+
 public class estacionSismologica{
     private String codigoEstacion;
     private String documentoCertificacionAdq;

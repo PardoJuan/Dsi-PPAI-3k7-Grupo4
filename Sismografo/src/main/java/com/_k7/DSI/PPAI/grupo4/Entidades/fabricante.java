@@ -1,3 +1,5 @@
+package com._k7.DSI.PPAI.grupo4.Entidades;
+
 public class fabricante{
     private String nombre;
     private String razonSocial;

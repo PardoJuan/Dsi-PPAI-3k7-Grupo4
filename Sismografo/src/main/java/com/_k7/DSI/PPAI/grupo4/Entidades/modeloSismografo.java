@@ -1,4 +1,4 @@
-import fabricante;
+package com._k7.DSI.PPAI.grupo4.Entidades;
 
 public class modeloSismografo{
     private String caracteristicas;

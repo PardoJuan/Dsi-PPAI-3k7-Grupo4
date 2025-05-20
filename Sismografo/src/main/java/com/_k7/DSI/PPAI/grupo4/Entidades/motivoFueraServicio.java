@@ -1,4 +1,6 @@
-import motivoTipo;
+package com._k7.DSI.PPAI.grupo4.Entidades;
+
+
 
 public class motivoFueraServicio{
     private String comentario;
