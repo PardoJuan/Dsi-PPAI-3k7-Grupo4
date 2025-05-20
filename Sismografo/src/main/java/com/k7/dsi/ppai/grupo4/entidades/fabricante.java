@@ -8,10 +8,10 @@ public class fabricante{
         this.nombre = nombre;
         this.razonSocial = razonSocial;
     }
-    public String getNombre() {
+    public String getNombreFabricante() {
         return nombre;
     }
-    public void setNombre(String nombre) {
+    public void setNombreFabricante(String nombre) {
         this.nombre = nombre;
     }
     public String getRazonSocial() {
