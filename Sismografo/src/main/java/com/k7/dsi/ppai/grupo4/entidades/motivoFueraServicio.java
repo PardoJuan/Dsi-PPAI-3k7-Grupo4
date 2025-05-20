@@ -1,4 +1,4 @@
-package com._k7.DSI.PPAI.grupo4.Entidades;
+package com.k7.dsi.ppai.grupo4.entidades;
 
 
 

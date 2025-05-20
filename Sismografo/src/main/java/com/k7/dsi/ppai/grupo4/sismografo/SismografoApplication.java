@@ -1,4 +1,4 @@
-package com._k7.DSI.PPAI.grupo4.Sismografo;
+package com.k7.dsi.ppai.grupo4.sismografo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
