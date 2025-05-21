@@ -6,10 +6,12 @@ public class motivoFueraServicio{
     private String comentario;
     private motivoTipo motivoTipo;
 
+    // Constructor
     public motivoFueraServicio(String comentario, motivoTipo motivoTipo) {
         this.comentario = comentario;
         this.motivoTipo = motivoTipo;
     }
+    // Getters y Setters
     public String getComentario() {
         return comentario;
     }
