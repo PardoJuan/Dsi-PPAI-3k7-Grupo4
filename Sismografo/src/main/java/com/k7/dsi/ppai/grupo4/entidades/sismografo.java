@@ -7,10 +7,10 @@ public class sismografo{
     private Integer nroSerie;
     private estado estadoActual;
     private cambioEstado cambioEstado;
-    private estacionSismonologica estacionSismonologica;
+    private estacionSismologica estacionSismologica;
     
-    public sismografo(String fechaAdquisicion, String identificadorSismografo, Integer nroSerie, estado estadoActual, cambioEstado cambioEstado, estacionSismonologica estacionSismonologica) {
-        this.estacionSismonologica = estacionSismonologica;
+    public sismografo(String fechaAdquisicion, String identificadorSismografo, Integer nroSerie, estado estadoActual, cambioEstado cambioEstado, estacionSismologica estacionSismologica) {
+        this.estacionSismologica = estacionSismologica;
         this.fechaAdquisicion = fechaAdquisicion;
         this.identificadorSismografo = identificadorSismografo;
         this.nroSerie = nroSerie;
@@ -49,11 +49,11 @@ public class sismografo{
         this.cambioEstado = cambioEstado;
     }
 
-    public estacionSismonologica getEstacionSismonologica() {
-        return estacionSismonologica;
+    public estacionSismologica getEstacionSismologica() {
+        return estacionSismologica;
     }
-    public void setEstacionSismonologica(estacionSismonologica estacionSismonologica) {
-        this.estacionSismonologica = estacionSismonologica;
+    public void setEstacionSismonologica(estacionSismologica estacionSismonologica) {
+        this.estacionSismologica = estacionSismonologica;
     }
 
     public void setEstado(ArrayList<cambioEstado> cambiosEstado, String fechaHoraActual) {

@@ -10,10 +10,10 @@ public class ordenInspeccion {
     private String observacionCierre;
     private estado estado;
     private empleado empleado;
-    private estacionSismonologica estacionSismonologica;
+    private estacionSismologica estacionSismologica;
 
-    public ordenInspeccion(String fechaHoraCierre, String fechaHoraFinalizacion, String fechaHoraInicio, Integer numeroOrden, String observacionCierre, estado estado, empleado empleado, estacionSismonologica estacionSismonologica) {
-        this.estacionSismonologica = estacionSismonologica;
+    public ordenInspeccion(String fechaHoraCierre, String fechaHoraFinalizacion, String fechaHoraInicio, Integer numeroOrden, String observacionCierre, estado estado, empleado empleado, estacionSismologica estacionSismonologica) {
+        this.estacionSismologica = estacionSismologica;
         this.fechaHoraCierre = fechaHoraCierre;
         this.fechaHoraFinalizacion = fechaHoraFinalizacion;
         this.fechaHoraInicio = fechaHoraInicio;
@@ -43,15 +43,15 @@ public class ordenInspeccion {
     public estado getEstado() {
         return estado;
     }
-    public estacionSismonologica getEstacionSismonologica() {
-        return estacionSismonologica;
+    public estacionSismologica getEstacionSismologica() {
+        return estacionSismologica;
     }
     public String getNombre() {
-        return estacionSismonologica.getNombre();
+        return estacionSismologica.getNombre();
     }
 
     public void actualizarSismografoFS(ArrayList<sismografo> sismografos, ArrayList<cambioEstado> cambiosEstado, String fechaHoraActual) {
-        this.estacionSismonologica.enviarAReparar(sismografos, cambiosEstado, fechaHoraActual);
+        this.estacionSismologica.enviarAReparar(sismografos, cambiosEstado, fechaHoraActual);
     }
     
 }

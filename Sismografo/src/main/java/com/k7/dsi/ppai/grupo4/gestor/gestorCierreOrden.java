@@ -11,15 +11,15 @@ import com.k7.dsi.ppai.grupo4.entidades.sismografo;
 import com.k7.dsi.ppai.grupo4.entidades.usuario;
 public class gestorCierreOrden {
     private usuario responsableInspecciones;
-    private ArrayList<Integer> nroOrden;
-    private ArrayList<String> fechaHoraFinalizacion;
-    private ArrayList<String> nombreEstacion;
-    private ArrayList<String> identificadorSismografo;
+    private ArrayList<Integer> nroOrden = new ArrayList<>();
+    private ArrayList<String> fechaHoraFinalizacion = new ArrayList<>();
+    private ArrayList<String> nombreEstacion = new ArrayList<>();
+    private ArrayList<String> identificadorSismografo = new ArrayList<>();
     private String observacion;
-    private ArrayList<String> motivosSeleccionados;
-    private ArrayList<String> comentariosTomados;
+    private ArrayList<String> motivosSeleccionados = new ArrayList<>();
+    private ArrayList<String> comentariosTomados = new ArrayList<>();
     private String fechaHoraActual;
-    private ArrayList<String> mailResponsablesReparaciones;
+    private ArrayList<String> mailResponsablesReparaciones = new ArrayList<>();
 
 
     public void conocerRI(sesion sesion) {
@@ -59,16 +59,19 @@ public class gestorCierreOrden {
         }
     }
     public void buscarEstacionSismonologica(ordenInspeccion orden, ArrayList<sismografo> sismografos) {
-        this.nombreEstacion.add(orden.getNombre());
-        for (sismografo sismografo : sismografos) {
-            if (sismografo.getEstacionSismonologica().equals(orden.getEstacionSismonologica())) {
-                this.identificadorSismografo.add(orden.getEstacionSismonologica().getIdentificadorSismografo(sismografo));
-            } else {
-                this.identificadorSismografo.add("No se encontro el sismografo");
-            }
+    this.nombreEstacion.add(orden.getNombre());
+    boolean encontrado = false;
+    for (sismografo s : sismografos) {
+        if (s.getEstacionSismologica().equals(orden.getEstacionSismologica())) {
+            this.identificadorSismografo.add(orden.getEstacionSismologica().getIdentificadorSismografo(s));
+            encontrado = true;
+            break;
         }
-
     }
+    if (!encontrado) {
+        this.identificadorSismografo.add("No se encontró el sismógrafo");
+    }
+}
     public usuario getResponsableInspecciones() {
         return responsableInspecciones;
     }
