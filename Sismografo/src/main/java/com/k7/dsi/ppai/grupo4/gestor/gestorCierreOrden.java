@@ -113,7 +113,7 @@ public class gestorCierreOrden {
     }
     public ArrayList<String> mostrarOrdenesRealizadas() {
         ArrayList<String> ordenes = new ArrayList<>();
-        // ACA ESTA EL PROBLEMA
+
         for (int i = 0; i < this.fechaHoraFinalizacion.size(); i++) {
             String orden = "Orden N°: " + this.nroOrden.get(i) + ", Fecha y Hora de Finalización: " + this.fechaHoraFinalizacion.get(i) + ", Nombre de Estación: " + this.nombreEstacion.get(i) + ", Identificador Sismógrafo: " + this.identificadorSismografo.get(i);
             ordenes.add(orden);
