@@ -1,13 +1,14 @@
 package com.k7.dsi.ppai.grupo4.gestor;
 import java.util.ArrayList;
 
+import com.k7.dsi.ppai.grupo4.entidades.cambioEstado;
 import com.k7.dsi.ppai.grupo4.entidades.empleado;
+import com.k7.dsi.ppai.grupo4.entidades.estado;
 import com.k7.dsi.ppai.grupo4.entidades.motivoTipo;
 import com.k7.dsi.ppai.grupo4.entidades.ordenInspeccion;
 import com.k7.dsi.ppai.grupo4.entidades.sesion;
 import com.k7.dsi.ppai.grupo4.entidades.sismografo;
 import com.k7.dsi.ppai.grupo4.entidades.usuario;
-import com.k7.dsi.ppai.grupo4.entidades.estado;
 public class gestorCierreOrden {
     private usuario responsableInspecciones;
     private ArrayList<Integer> nroOrden;
@@ -18,17 +19,21 @@ public class gestorCierreOrden {
     private ArrayList<String> motivosSeleccionados;
     private ArrayList<String> comentariosTomados;
     private String fechaHoraActual;
+    private ArrayList<String> mailResponsablesReparaciones;
 
 
     public void conocerRI(sesion sesion) {
         this.responsableInspecciones = sesion.conocerRI().getRIlogeado();
+        System.out.println("1");
 
     }
 
     public void buscarOrdenesRealizadas(usuario responsableInspecciones , ArrayList<ordenInspeccion> ordenesRealizadas, ArrayList<sismografo> sismografos) {
         for (ordenInspeccion orden : ordenesRealizadas) {
             if (this.validarEmpleadoLog(orden.getEmpleado())) {
+                System.out.println("2");
                 if(this.estaRealizada(orden)){
+                    System.out.println("3");
                     this.nroOrden.add(orden.getNumeroOrden());
                     this.fechaHoraFinalizacion.add(orden.getFechaCierre());
                     this.buscarEstacionSismonologica(orden, sismografos);
@@ -105,6 +110,7 @@ public class gestorCierreOrden {
     }
     public ArrayList<String> mostrarOrdenesRealizadas() {
         ArrayList<String> ordenes = new ArrayList<>();
+        // ACA ESTA EL PROBLEMA
         for (int i = 0; i < this.fechaHoraFinalizacion.size(); i++) {
             String orden = "Orden N°: " + this.nroOrden.get(i) + ", Fecha y Hora de Finalización: " + this.fechaHoraFinalizacion.get(i) + ", Nombre de Estación: " + this.nombreEstacion.get(i) + ", Identificador Sismógrafo: " + this.identificadorSismografo.get(i);
             ordenes.add(orden);
@@ -164,10 +170,10 @@ public class gestorCierreOrden {
     public ArrayList<Integer> getNroOrden() {
         return nroOrden;        
     }
-    public void actualizarSismografoBaja(ArrayList<estado> estado, ordenInspeccion ordenInspeccion) {
+    public void actualizarSismografoBaja(ArrayList<estado> estado, ordenInspeccion ordenInspeccion, ArrayList<sismografo> sismografos, ArrayList<cambioEstado> cambiosEstado) {
         estado estadoSelecionado = this.buscarEstadoParaAsignar(estado);
         this.getFechaHoraActual();
-        this.actualizarSismografoFS(ordenInspeccion, estadoSelecionado);
+        this.actualizarSismografoFS(ordenInspeccion, estadoSelecionado, sismografos, cambiosEstado);
 
     }
 
@@ -193,8 +199,84 @@ public class gestorCierreOrden {
             return false;
         } 
     }
-    public void actualizarSismografoFS(ordenInspeccion ordenInspeccion, estado estado) {
-        
+    public void actualizarSismografoFS(ordenInspeccion ordenInspeccion, estado estado, ArrayList<sismografo> sismografos, ArrayList<cambioEstado> cambiosEstado) {
+        ordenInspeccion.actualizarSismografoFS( sismografos,  cambiosEstado, this.fechaHoraActual);
     }
-    
-}
+    public void obtenerMailResponsablesReparaciones(ArrayList<empleado> empleados) {
+        for (empleado empleado : empleados) {
+            if (empleado.esResponsableDeReparacion()) {
+                this.obtenerMail(empleado);
+                }
+            }
+        }
+    public void obtenerMail(empleado empleado){
+            this.mailResponsablesReparaciones.add(empleado.obtenerMail());
+        }
+
+    public void publicarEnMonitores() {
+        StringBuilder mensaje = new StringBuilder();
+        mensaje.append("⚠️ CCRS - Notificación de Cambio de Estado ⚠️\n\n");
+        mensaje.append("Sismógrafo: ").append(this.identificadorSismografo).append("\n");
+        mensaje.append("Estado: Fuera de Servicio\n");
+        mensaje.append("Fecha y Hora de Registro: ").append(this.fechaHoraActual).append("\n\n");
+        mensaje.append("Motivos:\n");
+        for (String motivo : this.motivosSeleccionados) {
+            mensaje.append(" - ").append(motivo).append("\n");
+        }
+        mensaje.append("\nComentarios:\n");
+        for (String comentario : this.comentariosTomados) {
+            mensaje.append(" - ").append(comentario).append("\n");
+        }
+
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            javax.swing.JOptionPane.showMessageDialog(
+                null,
+                mensaje.toString(),
+                "CCRS - Alerta de Sismógrafo",
+                javax.swing.JOptionPane.WARNING_MESSAGE
+            );
+        });
+    }
+    public void enviarNotificacionesMail(){
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            StringBuilder mensaje = new StringBuilder();
+            mensaje.append("<html>");
+            mensaje.append("<b>De:</b> CCRS Notificaciones &lt;no-reply@ccrs.com&gt;<br>");
+            mensaje.append("<b>Para:</b> ");
+            for (int i = 0; i < this.mailResponsablesReparaciones.size(); i++) {
+                mensaje.append(this.mailResponsablesReparaciones.get(i));
+                if (i < this.mailResponsablesReparaciones.size() - 1) {
+                    mensaje.append("; ");
+                }
+            }
+            mensaje.append("<br>");
+            mensaje.append("<b>Asunto:</b> Notificación de Cambio de Estado - Sismógrafo Fuera de Servicio<br><hr>");
+            mensaje.append("<b>Sismógrafo:</b> ").append(this.identificadorSismografo).append("<br>");
+            mensaje.append("<b>Estado:</b> Fuera de Servicio<br>");
+            mensaje.append("<b>Fecha y Hora de Registro:</b> ").append(this.fechaHoraActual).append("<br><br>");
+            mensaje.append("<b>Motivos:</b><ul>");
+            for (String motivo : this.motivosSeleccionados) {
+                mensaje.append("<li>").append(motivo).append("</li>");
+            }
+            mensaje.append("</ul>");
+            mensaje.append("<b>Comentarios:</b><ul>");
+            for (String comentario : this.comentariosTomados) {
+                mensaje.append("<li>").append(comentario).append("</li>");
+            }
+            mensaje.append("</ul>");
+            mensaje.append("</html>");
+
+            javax.swing.JOptionPane.showMessageDialog(
+                null,
+                mensaje.toString(),
+                "Gmail - Notificación de Sismógrafo Fuera de Servicio",
+                javax.swing.JOptionPane.INFORMATION_MESSAGE,
+                new javax.swing.ImageIcon(gestorCierreOrden.class.getResource("/javax/swing/plaf/metal/icons/ocean/info.png"))
+            );
+        });
+    }
+    }
+
+
+
+

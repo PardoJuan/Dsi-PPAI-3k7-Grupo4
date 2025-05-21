@@ -13,4 +13,11 @@ public class sesion{
     public usuario conocerRI(){
         return this.usuario;
     }
+    public String getFechaHoraFin(){
+        return this.fechaHasta;
+    }
+
+    public usuario getUsuario() {
+        return usuario;
+    }
 }

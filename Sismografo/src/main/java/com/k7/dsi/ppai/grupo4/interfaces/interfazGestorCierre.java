@@ -10,13 +10,13 @@ import com.k7.dsi.ppai.grupo4.entidades.*;
 public class interfazGestorCierre extends JFrame {
     private static final long serialVersionUID = 1L;
 
-    public void habilitarVentana(sesion sesion, ArrayList<ordenInspeccion> ordenesRealizadas, ArrayList<sismografo> sismografos, ArrayList<motivoTipo> tiposMotivos, ArrayList<estado> estados) {
+    public void habilitarVentana(sesion sesion, ArrayList<ordenInspeccion> ordenesRealizadas, ArrayList<sismografo> sismografos, ArrayList<motivoTipo> tiposMotivos, ArrayList<estado> estados, ArrayList<empleado> empleados, ArrayList<usuario> usuarios, ArrayList<cambioEstado> cambiosEstado) {
         // Configuración básica de la ventana
         setTitle("Gestor de Cierre");
         setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-
+        
         // Crear panel principal
         JPanel panel = new JPanel();
         panel.setLayout(new GridBagLayout());
@@ -44,6 +44,7 @@ public class interfazGestorCierre extends JFrame {
         gbc.gridy = 1;
         gbc.gridwidth = 1;
         panel.add(btnAceptar, gbc);
+        
 
         // Botón Cancelar
         JButton btnCancelar = new JButton("Cancelar");
@@ -54,10 +55,12 @@ public class interfazGestorCierre extends JFrame {
         gbc.gridx = 1;
         gbc.gridy = 1;
         panel.add(btnCancelar, gbc);
+         
 
         // Acción para el botón Aceptar
         btnAceptar.addActionListener(e -> {
             gestorCierreOrden gestor = new gestorCierreOrden();
+            System.out.println("Gestor de Cierre iniciado.");
             gestor.conocerRI(sesion);
             gestor.buscarOrdenesRealizadas(gestor.getResponsableInspecciones(), ordenesRealizadas, sismografos);
             gestor.ordenarPorFechaHoraFin();
@@ -195,9 +198,11 @@ public class interfazGestorCierre extends JFrame {
                                                 return;
                                             }
                                             gestor.cerrarOrdenInspeccion(estado, ordenSeleccionada);
-                                            gestor.actualizarSismografoBaja(estados, ordenSeleccionada);
-
-
+                                            gestor.actualizarSismografoBaja(estados, ordenSeleccionada, sismografos, cambiosEstado);
+                                            gestor.obtenerMailResponsablesReparaciones( empleados); 
+                                            gestor.publicarEnMonitores();
+                                            gestor.enviarNotificacionesMail();
+                                            JOptionPane.showMessageDialog(this, "Orden cerrada con éxito.");
 
                                         } else {
                                         }
@@ -213,6 +218,22 @@ public class interfazGestorCierre extends JFrame {
                 } else {
                     JOptionPane.showMessageDialog(this, "Por favor, seleccione una orden.");
                 }
-            });
+            }
+            );
         });
+        // Acción para el botón Cancelar
+        btnCancelar.addActionListener(e -> {
+            JOptionPane.showMessageDialog(this, "Operación cancelada.");
+            dispose();
+        }); 
+        panel.add(btnAceptar, gbc);
+        panel.add(btnCancelar, gbc);
+        // Agregar el panel a la ventana
+        getContentPane().add(panel);
+        setVisible(true);
+        setResizable(false);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        
     
+    ;}}

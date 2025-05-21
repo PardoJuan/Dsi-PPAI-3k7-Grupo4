@@ -1,5 +1,7 @@
 package com.k7.dsi.ppai.grupo4.entidades;
 
+import java.util.ArrayList;
+
 public class ordenInspeccion {
     private String fechaHoraCierre;
     private String fechaHoraFinalizacion;
@@ -48,8 +50,8 @@ public class ordenInspeccion {
         return estacionSismonologica.getNombre();
     }
 
-    public void actualizarSismografoFS(){
-        this.estacionSismonologica.enviarAReparar()
+    public void actualizarSismografoFS(ArrayList<sismografo> sismografos, ArrayList<cambioEstado> cambiosEstado, String fechaHoraActual) {
+        this.estacionSismonologica.enviarAReparar(sismografos, cambiosEstado, fechaHoraActual);
     }
     
 }
