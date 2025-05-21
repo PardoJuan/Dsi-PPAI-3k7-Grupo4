@@ -32,7 +32,7 @@ public class MenuCursos extends JFrame {
         panel.add(titulo, gbc);
         
         // Botón Curso Normal
-        JButton btnNormal = new JButton("Curso Normal");
+        JButton btnNormal = new JButton("Cerrar orden");
         btnNormal.setFont(new Font("Arial", Font.PLAIN, 14));
         btnNormal.setPreferredSize(new Dimension(200, 50));
         btnNormal.setBackground(new Color(100, 150, 255));
@@ -43,7 +43,7 @@ public class MenuCursos extends JFrame {
         panel.add(btnNormal, gbc);
         
         // Botón Curso Alternativo
-        JButton btnAlternativo = new JButton("Curso Alternativo");
+        JButton btnAlternativo = new JButton("Cerrar orden (sin ordenes)");
         btnAlternativo.setFont(new Font("Arial", Font.PLAIN, 14));
         btnAlternativo.setPreferredSize(new Dimension(200, 50));
         btnAlternativo.setBackground(new Color(255, 150, 100));

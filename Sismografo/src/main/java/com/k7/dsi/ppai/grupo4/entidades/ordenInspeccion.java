@@ -47,5 +47,9 @@ public class ordenInspeccion {
     public String getNombre() {
         return estacionSismonologica.getNombre();
     }
+
+    public void actualizarSismografoFS(){
+        this.estacionSismonologica.enviarAReparar()
+    }
     
 }

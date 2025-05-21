@@ -33,4 +33,8 @@ public class estacionSismonologica {
     public void setCodigoEstacion(String codigoEstacion) {
         this.codigoEstacion = codigoEstacion;
     }
+
+    public void enviarAReparar(){
+        
+    }
 }
