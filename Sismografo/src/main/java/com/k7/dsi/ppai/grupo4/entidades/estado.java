@@ -20,5 +20,8 @@ public class estado {
     public void setNombreEstado(String nombreEstado) {
         this.nombreEstado = nombreEstado;
     }
+    public boolean esRealizada(){
+        return (this.nombreEstado == "Realizada");
+    }
     
 }

@@ -1,5 +1,4 @@
 package com.k7.dsi.ppai.grupo4.entidades;
-import java.sql.Date;
 import java.util.ArrayList;
 
 public class estacionSismologica {
@@ -28,19 +27,20 @@ public class estacionSismologica {
         return nombre;
     }
 
-    public String getIdentificadorSismografo(sismografo sismografo) {
-        return sismografo.getIdentificadorSismografo();
+    public String getIdentificadorSismografo(ArrayList<sismografo> sismografos){
+        for (sismografo sismografo : sismografos) {
+            String identificador = sismografo.getIdentificadorSismografo(this);
+            if (identificador != null) {
+                return identificador;
+            }
+        }
+        return null;
     }
+
+
     public void setCodigoEstacion(String codigoEstacion) {
         this.codigoEstacion = codigoEstacion;
     }
 
-    public void enviarAReparar(ArrayList<sismografo> sismografos, ArrayList<cambioEstado> cambiosEstado, String fechaHoraActual) {
-        for (sismografo sismografo : sismografos) {
-            if (sismografo.getEstacionSismologica().equals(this)) {
-                sismografo.setEstado(cambiosEstado, fechaHoraActual);
-            }
-        }
-
-    }
+    
 }

@@ -12,7 +12,7 @@ public class ordenInspeccion {
     private empleado empleado;
     private estacionSismologica estacionSismologica;
 
-    public ordenInspeccion(String fechaHoraCierre, String fechaHoraFinalizacion, String fechaHoraInicio, Integer numeroOrden, String observacionCierre, estado estado, empleado empleado, estacionSismologica estacionSismonologica) {
+    public ordenInspeccion(String fechaHoraCierre, String fechaHoraFinalizacion, String fechaHoraInicio, Integer numeroOrden, String observacionCierre, estado estado, empleado empleado, estacionSismologica estacionSismologica) {
         this.estacionSismologica = estacionSismologica;
         this.fechaHoraCierre = fechaHoraCierre;
         this.fechaHoraFinalizacion = fechaHoraFinalizacion;
@@ -25,10 +25,23 @@ public class ordenInspeccion {
     public String getFechaCierre() {
         return fechaHoraCierre;
     }
+
+    public String getFechaFinalizacion() {
+        return fechaHoraFinalizacion;
+    }
+
     public void setFechaHoraCierre(String fechaHoraCierre) {
         this.fechaHoraCierre = fechaHoraCierre;
     }
-    
+
+    public boolean validarEmpleadoLog(empleado responsableInspecciones) {
+        return (responsableInspecciones == this.empleado);
+    }
+
+    public boolean estaRealizada(){
+        return this.estado.esRealizada();
+    }
+
     public Integer getNumeroOrden() {
         return numeroOrden;
     }
@@ -49,9 +62,17 @@ public class ordenInspeccion {
     public String getNombre() {
         return estacionSismologica.getNombre();
     }
-
-    public void actualizarSismografoFS(ArrayList<sismografo> sismografos, ArrayList<cambioEstado> cambiosEstado, String fechaHoraActual) {
-        this.estacionSismologica.enviarAReparar(sismografos, cambiosEstado, fechaHoraActual);
-    }
     
+    public ArrayList<Object> buscarEstacionSismologica(ArrayList<sismografo> sismografos){
+        ArrayList<Object> datos = new ArrayList<>();
+        datos.add(estacionSismologica.getNombre());
+        datos.add(estacionSismologica.getIdentificadorSismografo(sismografos));
+        return datos;
+    }
+
+
+    
+    public void setObservacionCierre(String observacionCierre) {
+        this.observacionCierre = observacionCierre;
+    }
 }

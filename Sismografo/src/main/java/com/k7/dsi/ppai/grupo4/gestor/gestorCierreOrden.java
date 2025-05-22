@@ -1,284 +1,282 @@
 package com.k7.dsi.ppai.grupo4.gestor;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 import com.k7.dsi.ppai.grupo4.entidades.cambioEstado;
 import com.k7.dsi.ppai.grupo4.entidades.empleado;
+import com.k7.dsi.ppai.grupo4.entidades.estacionSismologica;
 import com.k7.dsi.ppai.grupo4.entidades.estado;
 import com.k7.dsi.ppai.grupo4.entidades.motivoTipo;
 import com.k7.dsi.ppai.grupo4.entidades.ordenInspeccion;
+import com.k7.dsi.ppai.grupo4.entidades.rol;
 import com.k7.dsi.ppai.grupo4.entidades.sesion;
 import com.k7.dsi.ppai.grupo4.entidades.sismografo;
 import com.k7.dsi.ppai.grupo4.entidades.usuario;
+
+
 public class gestorCierreOrden {
-    private usuario responsableInspecciones;
-    private ArrayList<Integer> nroOrden = new ArrayList<>();
-    private ArrayList<String> fechaHoraFinalizacion = new ArrayList<>();
-    private ArrayList<String> nombreEstacion = new ArrayList<>();
-    private ArrayList<String> identificadorSismografo = new ArrayList<>();
-    private String observacion;
-    private ArrayList<String> motivosSeleccionados = new ArrayList<>();
-    private ArrayList<String> comentariosTomados = new ArrayList<>();
-    private String fechaHoraActual;
-    private ArrayList<String> mailResponsablesReparaciones = new ArrayList<>();
+    private empleado responsableInspecciones;
+    private ArrayList<ArrayList<Object>> inpeccionesOrdenada = new ArrayList<ArrayList<Object>>();
+    private ArrayList<String> ordenSelecionada = new ArrayList<String>();
+    private String comentario;
+    private ArrayList<String> motivos = new ArrayList<String>();
+    private ArrayList<String> motivosSeleccionados = new ArrayList<String>();
+    
+    public gestorCierreOrden(){
+        empleado empleadoPrueba = new empleado("Juan", "Perez", "juan@gmail.com", "123456789", new rol("Responsable de Inspeccion", "descripcion"));
+        estacionSismologica estacionSismologicaPrueba = new estacionSismologica("1", "", "2023-10-01 10:00:00", 1, 1, "Estacion cordoba", 1);
+        sesion sesion = new sesion("2023-10-01 10:00:00", null, new usuario("admin", "admin", empleadoPrueba));
 
+        ArrayList<ordenInspeccion> ordenes = new ArrayList<ordenInspeccion>();
+            ordenes.add(new ordenInspeccion(null, "2023-10-01 12:00:00", "2023-10-01 10:00:00", 1, "Observacion de cierre", new estado("Orden de inspeccion", "Realizada"), empleadoPrueba, estacionSismologicaPrueba));
+            ordenes.add(new ordenInspeccion(null, "2023-10-01 12:00:00", "2023-10-01 10:00:00", 2, "Observacion de cierre", new estado("Orden de inspeccion", "Realizada"),new empleado("Jose", "Perez", "jose@gmail.com", "123456789", new rol("Responsable de Inspeccion", "descripcion")), new estacionSismologica("2", "", "2023-10-01 10:00:00", 2, 2, "Estacion Mendoza", 2)));
+            ordenes.add(new ordenInspeccion(null, "2023-12-01 12:00:00", "2023-10-01 10:00:00", 3, "Observacion de cierre", new estado("Orden de inspeccion", "Realizada"), empleadoPrueba, estacionSismologicaPrueba));
+            ordenes.add(new ordenInspeccion(null, "2023-09-01 12:00:00", "2023-10-01 10:00:00", 4, "Observacion de cierre", new estado("Orden de inspeccion", "Realizada"), empleadoPrueba, estacionSismologicaPrueba));
 
+        ArrayList<motivoTipo> motivosTipo = new ArrayList<motivoTipo>();
+            motivosTipo.add(new motivoTipo("Averia por vibracion"));
+            motivosTipo.add(new motivoTipo("Desgaste de componente"));
+            motivosTipo.add(new motivoTipo("Fallo en el sistema de registro"));
+            motivosTipo.add(new motivoTipo("Bandalismo"));
+            motivosTipo.add(new motivoTipo("Fallo en fuente de alimentacion"));
+            motivosTipo.add(new motivoTipo("Otro (Tendra que aclarar...)"));
+            
+            
+        ArrayList<sismografo> sismografos = new ArrayList<sismografo>();
+            sismografos.add(new sismografo("2023-10-01", "1", 1, new estado("Sismografo", "En operacion"), new cambioEstado("2023-10-01", "2023-10-01", new estado("Sismografo", "En operacion")), estacionSismologicaPrueba));
+        ArrayList<estado> estados = new ArrayList<estado>();
+            estados.add(new estado("Orden de Inspeccion", "Cerrada"));
+            estados.add(new estado("Orden de Inspeccion", "Realizada"));
+            estados.add(new estado("Sismografo", "En operacion"));
+            estados.add(new estado("Sismografo", "Fuera de servicio"));
+        this.conocerRI(sesion);
+        ArrayList<ArrayList<Object>> inpecciones = this.buscarOrdenesRealizadas(ordenes, sismografos);
+        inpecciones = ordenarPorFechaFin(inpecciones);
+        this.inpeccionesOrdenada = inpecciones;
+        
+        System.out.println(inpecciones);
+        ArrayList<String> motivos = buscarTipoMotivoFS(motivosTipo);
+        this.motivos = motivos;
+        System.out.println(motivos);
+        
+    }
+    
     public void conocerRI(sesion sesion) {
         this.responsableInspecciones = sesion.conocerRI().getRIlogeado();
-        System.out.println("1");
-
     }
 
-    public void buscarOrdenesRealizadas(usuario responsableInspecciones , ArrayList<ordenInspeccion> ordenesRealizadas, ArrayList<sismografo> sismografos) {
-        for (ordenInspeccion orden : ordenesRealizadas) {
-            if (this.validarEmpleadoLog(orden.getEmpleado())) {
-                System.out.println("2");
-                if(this.estaRealizada(orden)){
-                    System.out.println("3");
-                    this.nroOrden.add(orden.getNumeroOrden());
-                    this.fechaHoraFinalizacion.add(orden.getFechaCierre());
-                    this.buscarEstacionSismonologica(orden, sismografos);
-                }
-            }     
-        }
-    
-    }
-
-    public boolean  validarEmpleadoLog(empleado empleadoOrden) {
-        if (empleadoOrden.equals(this.responsableInspecciones.getEmpleado())) {
-            return true;
-        } else {
-            return false;
+    public ArrayList<ArrayList<Object>> buscarOrdenesRealizadas(ArrayList<ordenInspeccion>ordenes, ArrayList<sismografo> sismografos) {
+        ArrayList<ArrayList<Object>> inspecciones = new ArrayList<>();
+        for (ordenInspeccion orden : ordenes) {
+            if (orden.validarEmpleadoLog(this.responsableInspecciones) && orden.estaRealizada()){
+                ArrayList<Object> datosInspeccion = new ArrayList<>();
+                datosInspeccion.add(orden.getNumeroOrden());
+                datosInspeccion.add(orden.getFechaFinalizacion());
+                ArrayList<Object> datosEstacion = orden.buscarEstacionSismologica(sismografos);
+                datosInspeccion.add(datosEstacion.get(0));
+                datosInspeccion.add(datosEstacion.get(1));
+                inspecciones.add(datosInspeccion);
+            }
         }
 
+        return inspecciones; 
+        
     }
-    public boolean estaRealizada(ordenInspeccion orden) {
-        if (orden.getEstado().getNombreEstado().equals("Realizada")) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-    public void buscarEstacionSismonologica(ordenInspeccion orden, ArrayList<sismografo> sismografos) {
-    this.nombreEstacion.add(orden.getNombre());
-    boolean encontrado = false;
-    for (sismografo s : sismografos) {
-        if (s.getEstacionSismologica().equals(orden.getEstacionSismologica())) {
-            this.identificadorSismografo.add(orden.getEstacionSismologica().getIdentificadorSismografo(s));
-            encontrado = true;
-            break;
-        }
-    }
-    if (!encontrado) {
-        this.identificadorSismografo.add("No se encontró el sismógrafo");
-    }
-}
-    public usuario getResponsableInspecciones() {
-        return responsableInspecciones;
-    }
-    public void ordenarPorFechaHoraFin(){
-        if (this.fechaHoraFinalizacion.size()>0){
-            if (this.fechaHoraFinalizacion.size() == this.nroOrden.size() && this.fechaHoraFinalizacion.size() == this.nombreEstacion.size() && this.fechaHoraFinalizacion.size() == this.identificadorSismografo.size()){
-                ArrayList<String> fechas = new ArrayList<>(this.fechaHoraFinalizacion);
-                ArrayList<Integer> numeros = new ArrayList<>(this.nroOrden);
-                ArrayList<String> nombres = new ArrayList<>(this.nombreEstacion);
-                ArrayList<String> identificadores = new ArrayList<>(this.identificadorSismografo);
 
-                ArrayList<Integer> indices = new ArrayList<>();
-                for (int i = 0; i < fechas.size(); i++) {
-                    indices.add(i);
-                }
+    public ArrayList<ArrayList<Object>> ordenarPorFechaFin(ArrayList<ArrayList<Object>> inspecciones) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-                indices.sort((i1, i2) -> fechas.get(i1).compareTo(fechas.get(i2)));
-
-                ArrayList<String> fechasOrdenadas = new ArrayList<>();
-                ArrayList<Integer> numerosOrdenados = new ArrayList<>();
-                ArrayList<String> nombresOrdenados = new ArrayList<>();
-                ArrayList<String> identificadoresOrdenados = new ArrayList<>();
-
-                for (int idx : indices) {
-                    fechasOrdenadas.add(fechas.get(idx));
-                    numerosOrdenados.add(numeros.get(idx));
-                    nombresOrdenados.add(nombres.get(idx));
-                    identificadoresOrdenados.add(identificadores.get(idx));
-                }
-
-                this.fechaHoraFinalizacion = fechasOrdenadas;
-                this.nroOrden = numerosOrdenados;
-                this.nombreEstacion = nombresOrdenados;
-                this.identificadorSismografo = identificadoresOrdenados;
-        }
-        } else {
-            System.out.println("No hay fechas para ordenar");
-        }
+        inspecciones.sort(new Comparator<ArrayList<Object>>() {
+            @Override
+            public int compare(ArrayList<Object> o1, ArrayList<Object> o2) {
+                // Extraemos y parseamos la fecha del segundo elemento (índice 1)
+                LocalDateTime fecha1 = LocalDateTime.parse(o1.get(1).toString(), formatter);
+                LocalDateTime fecha2 = LocalDateTime.parse(o2.get(1).toString(), formatter);
+                return fecha1.compareTo(fecha2);
+            }
+        });
+        return inspecciones;
     }
-    public ArrayList<String> mostrarOrdenesRealizadas() {
-        ArrayList<String> ordenes = new ArrayList<>();
+    public ArrayList<ArrayList<Object>> getInpeccionesOrdenada() {
+        return inpeccionesOrdenada;
+    }
 
-        for (int i = 0; i < this.fechaHoraFinalizacion.size(); i++) {
-            String orden = "Orden N°: " + this.nroOrden.get(i) + ", Fecha y Hora de Finalización: " + this.fechaHoraFinalizacion.get(i) + ", Nombre de Estación: " + this.nombreEstacion.get(i) + ", Identificador Sismógrafo: " + this.identificadorSismografo.get(i);
-            ordenes.add(orden);
-        }
-        return ordenes;
+    public void tomarSelecionOrden(String idOrden, String fechaFin, String nombreEstacion, String idSismografo) {
+        // Implementar la lógica para tomar la selección de la orden
+        this.ordenSelecionada.add(idOrden);
+        this.ordenSelecionada.add(fechaFin);
+        this.ordenSelecionada.add(nombreEstacion);
+        this.ordenSelecionada.add(idSismografo);
+        System.out.println("Orden seleccionada: " + idOrden + ", Fecha Fin: " + fechaFin + ", Nombre Estacion: " + nombreEstacion + ", ID Sismografo: " + idSismografo);
+
     }
-    public void tomarObservacion(String observacion) {
-        this.observacion = observacion;
+    public void tomarComentario(String comentario){
+        this.comentario = comentario;
+        // Implementar la lógica para tomar el comentario
+        System.out.println("Comentario: " + comentario);
     }
-    public ArrayList<String> buscarTipoMotivoFS(ArrayList<motivoTipo> tiposMotivos) {
-        ArrayList<String> motivos = new ArrayList<>();
-        for (motivoTipo motivo : tiposMotivos) {
-            motivos.add(motivo.getDescripcion());
+
+
+    public ArrayList<String> buscarTipoMotivoFS(ArrayList<motivoTipo> motivos){
+        ArrayList<String> nombresMT = new ArrayList<>();
+        for ( motivoTipo motivo: motivos) {
+            nombresMT.add(motivo.getDescripcion());
         }
+        return nombresMT; 
+    }
+    public ArrayList<String> getMotivos() {
         return motivos;
+    };
+
+    public void tomarSeleccionTM(String motivoSeleccionado) {
+        this.motivosSeleccionados.add(motivoSeleccionado);
+        // Implementar la lógica para tomar la selección del motivo
+        System.out.println("Motivo seleccionado: " + motivoSeleccionado);
     }
 
-    public void tomarSeleccionTM(ArrayList<String> motivosSeleccionados) {
-        this.motivosSeleccionados = motivosSeleccionados;        
-    }
-    public void tomarComentario(ArrayList<String> comentariosTomados) {
-        this.comentariosTomados = comentariosTomados;
-    }
-    public boolean validarExisteObservacionYMotivo(){
-        if (this.observacion != null && this.motivosSeleccionados != null && this.comentariosTomados != null) {
+    public boolean validarExisteObservacionYMotivo() {
+        System.out.println("Comentario: " + this.comentario);
+        System.out.println("Motivos seleccionados: " + this.motivosSeleccionados);
+        // Implementar la lógica para validar si se seleccionaron motivos
+        if (this.comentario != null && !this.comentario.trim().isEmpty() && !this.motivosSeleccionados.isEmpty()) {
             return true;
         } else {
             return false;
         }
     }
 
-    public void getFechaHoraActual(){
-        this.fechaHoraActual = java.time.LocalDateTime.now().toString();
-    }
-    public boolean esAmbitoOrdenInspeccion(estado estado){
-        if (estado.getAmbito().equals("Orden Inspección")) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean esCerrada(estado estado){
-        if (estado.getNombreEstado().equals("Cerrada")) {
-            return true;
-        } else {
-            return false;
-        } 
-    }
-    public void cerrarOrdenInspeccion(estado estado ,ordenInspeccion ordenInspeccion){
-        ordenInspeccion.setEstado(estado);
-        ordenInspeccion.setFechaHoraCierre(this.fechaHoraActual);
-
-    }
-
-    
-    public ArrayList<Integer> getNroOrden() {
-        return nroOrden;        
-    }
-    public void actualizarSismografoBaja(ArrayList<estado> estado, ordenInspeccion ordenInspeccion, ArrayList<sismografo> sismografos, ArrayList<cambioEstado> cambiosEstado) {
-        estado estadoSelecionado = this.buscarEstadoParaAsignar(estado);
-        this.getFechaHoraActual();
-        this.actualizarSismografoFS(ordenInspeccion, estadoSelecionado, sismografos, cambiosEstado);
-
-    }
-
-    public estado buscarEstadoParaAsignar(ArrayList<estado> estado) {
-        for (estado est : estado) {
-            if (this.esAmbitoSismografo(est) && this.esFueraDeServicio(est)) {
-                return est;
+    public void actualizarOrden(ArrayList<ordenInspeccion> ordenes, ArrayList<estado> estados){
+        for (ordenInspeccion orden : ordenes){
+            if (orden.getNumeroOrden().equals(Integer.valueOf(this.ordenSelecionada.get(0).toString()))){
+                orden.setObservacionCierre(this.comentario);
+                orden.setFechaHoraCierre(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                
+                for (estado estado : estados){
+                    if (estado.getAmbito().equals("Orden de Inspeccion") && estado.getNombreEstado().equals("Cerrada")){
+                        orden.setEstado(estado);
+                        System.out.println("Orden actualizada: " + orden.getNumeroOrden());
+                        System.out.println("Fecha seleccionada: " + orden.getFechaFinalizacion());
+                    }
+                }
+                
+                
             }
         }
-        return null;
+        
     }
-    public boolean esAmbitoSismografo(estado estado){
-        if (estado.getAmbito().equals("Sismografo")) {
-            return true;
-        } else {
-            return false;
-        }
+    public void continuarCierreOrden(){
+        empleado empleadoPrueba = new empleado("Juan", "Perez", "juan@gmail.com", "123456789", new rol("Responsable de Inspeccion", "descripcion"));
+        estacionSismologica estacionSismologicaPrueba = new estacionSismologica("1", "", "2023-10-01 10:00:00", 1, 1, "Estacion cordoba", 1);
+        sesion sesion = new sesion("2023-10-01 10:00:00", null, new usuario("admin", "admin", empleadoPrueba));
+
+        ArrayList<ordenInspeccion> ordenes = new ArrayList<ordenInspeccion>();
+            ordenes.add(new ordenInspeccion(null, "2023-10-01 12:00:00", "2023-10-01 10:00:00", 1, "Observacion de cierre", new estado("Orden de inspeccion", "Realizada"), empleadoPrueba, estacionSismologicaPrueba));
+            ordenes.add(new ordenInspeccion(null, "2023-10-01 12:00:00", "2023-10-01 10:00:00", 2, "Observacion de cierre", new estado("Orden de inspeccion", "Realizada"),new empleado("Jose", "Perez", "jose@gmail.com", "123456789", new rol("Responsable de Inspeccion", "descripcion")), new estacionSismologica("2", "", "2023-10-01 10:00:00", 2, 2, "Estacion Mendoza", 2)));
+            ordenes.add(new ordenInspeccion(null, "2023-12-01 12:00:00", "2023-10-01 10:00:00", 3, "Observacion de cierre", new estado("Orden de inspeccion", "Realizada"), empleadoPrueba, estacionSismologicaPrueba));
+            ordenes.add(new ordenInspeccion(null, "2023-09-01 12:00:00", "2023-10-01 10:00:00", 4, "Observacion de cierre", new estado("Orden de inspeccion", "Realizada"), empleadoPrueba, estacionSismologicaPrueba));
+
+        ArrayList<motivoTipo> motivosTipo = new ArrayList<motivoTipo>();
+            motivosTipo.add(new motivoTipo("Averia por vibracion"));
+            motivosTipo.add(new motivoTipo("Desgaste de componente"));
+            motivosTipo.add(new motivoTipo("Fallo en el sistema de registro"));
+            motivosTipo.add(new motivoTipo("Bandalismo"));
+            motivosTipo.add(new motivoTipo("Fallo en fuente de alimentacion"));
+            motivosTipo.add(new motivoTipo("Otro (Tendra que aclarar...)"));
+            
+        ArrayList<rol> roles = new ArrayList<rol>();
+            roles.add(new rol("Responsable de Inspeccion", "descripcion"));
+            roles.add(new rol("Responsable de Reparacion", "descripcion"));
+            roles.add(new rol("Tecnico", "descripcion"));
+            roles.add(new rol("Tecnico de Campo", "descripcion"));
+            roles.add(new rol("Tecnico de Mantenimiento", "descripcion"));
+            roles.add(new rol("Tecnico de Soporte", "descripcion"));
+        ArrayList<empleado> empleados = new ArrayList<empleado>();
+            empleados.add(new empleado("Jose", "Jose", "josejose@gmail.com", "123456789", roles.get(1)));
+            empleados.add(new empleado("Jose", "Mario", "joseMario@gmail.com", "123456789", roles.get(1)));
+            empleados.add(new empleado("Josefa", "Josefa", "josefajosefa@gmail.com", "123456789", roles.get(4)));
+            
+        ArrayList<sismografo> sismografos = new ArrayList<sismografo>();
+            sismografos.add(new sismografo("2023-10-01", "1", 1, new estado("Sismografo", "En operacion"), new cambioEstado("2023-10-01", "2023-10-01", new estado("Sismografo", "En operacion")), estacionSismologicaPrueba));
+        ArrayList<estado> estados = new ArrayList<estado>();
+            estados.add(new estado("Orden de Inspeccion", "Cerrada"));
+            estados.add(new estado("Orden de Inspeccion", "Realizada"));
+            estados.add(new estado("Sismografo", "En operacion"));
+            estados.add(new estado("Sismografo", "Fuera de servicio"));
+        this.actualizarOrden(ordenes, estados);
+        this.actualizarSismografoBaja(sismografos, estados);
+        String comentarioEnviar = "Sismografo n° "+this.ordenSelecionada.get(3) + "estado fuera de servicio por: " + this.motivosSeleccionados + " a la hora "+ LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        this.enviarMail(empleados, comentarioEnviar);
+        this.publicarEnMonitores(comentarioEnviar);
+
+
     }
-    public boolean esFueraDeServicio(estado estado){
-        if (estado.getNombreEstado().equals("Fuera de Servicio")) {
-            return true;
-        } else {
-            return false;
-        } 
-    }
-    public void actualizarSismografoFS(ordenInspeccion ordenInspeccion, estado estado, ArrayList<sismografo> sismografos, ArrayList<cambioEstado> cambiosEstado) {
-        ordenInspeccion.actualizarSismografoFS( sismografos,  cambiosEstado, this.fechaHoraActual);
-    }
-    public void obtenerMailResponsablesReparaciones(ArrayList<empleado> empleados) {
-        for (empleado empleado : empleados) {
-            if (empleado.esResponsableDeReparacion()) {
-                this.obtenerMail(empleado);
+    public void actualizarSismografoBaja(ArrayList<sismografo> sismografos, ArrayList<estado> estados){
+        for (sismografo sismografo : sismografos){
+            if (sismografo.getIdSismografo().equals(this.ordenSelecionada.get(3))){
+                for (estado estado : estados){
+                    if (estado.getAmbito().equals("Sismografo") && estado.getNombreEstado().equals("Fuera de servicio")){
+                        // cambiar estado sismografo
+                        System.out.println("Sismografo actualizado: " + sismografo.getIdSismografo());
+                        System.out.println("Fecha seleccionada: " + sismografo.getCambioEstado().getFechaHoraFin());
+                    }
                 }
             }
         }
-    public void obtenerMail(empleado empleado){
-            this.mailResponsablesReparaciones.add(empleado.obtenerMail());
-        }
+    }
+    public void enviarMail(ArrayList<empleado> empleados, String comentario){
+        // Implementar la lógica para enviar el mail
+        for (empleado empleado : empleados) {
+            if (empleado.getRol().getNombre().equals("Responsable de Reparacion")) {
+                System.out.println("Enviando mail a: " + empleado.getMail() + " con comentario: " + comentario);
+                javax.swing.SwingUtilities.invokeLater(() -> {
+                    javax.swing.JFrame frame = new javax.swing.JFrame("Correo Electrónico");
+                    frame.setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
+                    frame.setSize(400, 350);
 
-    public void publicarEnMonitores() {
-        StringBuilder mensaje = new StringBuilder();
-        mensaje.append("⚠️ CCRS - Notificación de Cambio de Estado ⚠️\n\n");
-        mensaje.append("Sismógrafo: ").append(this.identificadorSismografo).append("\n");
-        mensaje.append("Estado: Fuera de Servicio\n");
-        mensaje.append("Fecha y Hora de Registro: ").append(this.fechaHoraActual).append("\n\n");
-        mensaje.append("Motivos:\n");
-        for (String motivo : this.motivosSeleccionados) {
-            mensaje.append(" - ").append(motivo).append("\n");
-        }
-        mensaje.append("\nComentarios:\n");
-        for (String comentario : this.comentariosTomados) {
-            mensaje.append(" - ").append(comentario).append("\n");
-        }
+                    javax.swing.JPanel panel = new javax.swing.JPanel();
+                    panel.setLayout(new java.awt.BorderLayout(10, 10));
 
+                    javax.swing.JLabel asuntoLabel = new javax.swing.JLabel("Asunto: Aviso de avería sismógrafo");
+                    asuntoLabel.setFont(asuntoLabel.getFont().deriveFont(java.awt.Font.BOLD, 14f));
+                    panel.add(asuntoLabel, java.awt.BorderLayout.NORTH);
+
+                    javax.swing.JPanel infoPanel = new javax.swing.JPanel();
+                    infoPanel.setLayout(new java.awt.GridLayout(2, 1));
+                    javax.swing.JLabel paraLabel = new javax.swing.JLabel("Para: " + empleado.getMail());
+                    javax.swing.JLabel deLabel = new javax.swing.JLabel("De: alertasAverias@estaciones.com");
+                    infoPanel.add(paraLabel);
+                    infoPanel.add(deLabel);
+                    panel.add(infoPanel, java.awt.BorderLayout.WEST);
+
+                    javax.swing.JTextArea mensajeArea = new javax.swing.JTextArea(comentario);
+                    mensajeArea.setLineWrap(true);
+                    mensajeArea.setWrapStyleWord(true);
+                    mensajeArea.setEditable(false);
+                    javax.swing.JScrollPane scroll = new javax.swing.JScrollPane(mensajeArea);
+                    panel.add(scroll, java.awt.BorderLayout.CENTER);
+
+                    frame.getContentPane().add(panel);
+                    frame.setLocationRelativeTo(null);
+                    frame.setVisible(true);
+                });
+            }
+            
+        }
+    }
+    public void publicarEnMonitores(String comentario){
         javax.swing.SwingUtilities.invokeLater(() -> {
             javax.swing.JOptionPane.showMessageDialog(
                 null,
-                mensaje.toString(),
-                "CCRS - Alerta de Sismógrafo",
+                comentario,
+                "Alerta - Aviso de avería sismógrafo",
                 javax.swing.JOptionPane.WARNING_MESSAGE
             );
         });
     }
-    public void enviarNotificacionesMail(){
-        javax.swing.SwingUtilities.invokeLater(() -> {
-            StringBuilder mensaje = new StringBuilder();
-            mensaje.append("<html>");
-            mensaje.append("<b>De:</b> CCRS Notificaciones &lt;no-reply@ccrs.com&gt;<br>");
-            mensaje.append("<b>Para:</b> ");
-            for (int i = 0; i < this.mailResponsablesReparaciones.size(); i++) {
-                mensaje.append(this.mailResponsablesReparaciones.get(i));
-                if (i < this.mailResponsablesReparaciones.size() - 1) {
-                    mensaje.append("; ");
-                }
-            }
-            mensaje.append("<br>");
-            mensaje.append("<b>Asunto:</b> Notificación de Cambio de Estado - Sismógrafo Fuera de Servicio<br><hr>");
-            mensaje.append("<b>Sismógrafo:</b> ").append(this.identificadorSismografo).append("<br>");
-            mensaje.append("<b>Estado:</b> Fuera de Servicio<br>");
-            mensaje.append("<b>Fecha y Hora de Registro:</b> ").append(this.fechaHoraActual).append("<br><br>");
-            mensaje.append("<b>Motivos:</b><ul>");
-            for (String motivo : this.motivosSeleccionados) {
-                mensaje.append("<li>").append(motivo).append("</li>");
-            }
-            mensaje.append("</ul>");
-            mensaje.append("<b>Comentarios:</b><ul>");
-            for (String comentario : this.comentariosTomados) {
-                mensaje.append("<li>").append(comentario).append("</li>");
-            }
-            mensaje.append("</ul>");
-            mensaje.append("</html>");
-
-            javax.swing.JOptionPane.showMessageDialog(
-                null,
-                mensaje.toString(),
-                "Gmail - Notificación de Sismógrafo Fuera de Servicio",
-                javax.swing.JOptionPane.INFORMATION_MESSAGE,
-                new javax.swing.ImageIcon(gestorCierreOrden.class.getResource("/javax/swing/plaf/metal/icons/ocean/info.png"))
-            );
-        });
-    }
-    }
+    //public ArrayList<ArrayList> ordenarPorFechaFin(ArrayList<ArrayList> ordenes){};
+};
 
 
 

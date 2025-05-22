@@ -9,10 +9,19 @@ public class usuario {
         this.nombreUsuario = nombreUsuario;
         this.empleado = empleado;
     }
-    public usuario getRIlogeado(){
-        return this;
+    public empleado getRIlogeado(){
+        return this.empleado;
     }
     public empleado getEmpleado() {
         return empleado;
     }
+
+    @Override
+    public String toString() {
+        return "Usuario{" +
+            "nombreUsuario='" + nombreUsuario + '\'' +
+            ", empleado=" + empleado +
+            '}';
+    }
+
 }

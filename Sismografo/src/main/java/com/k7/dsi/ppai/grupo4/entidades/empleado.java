@@ -24,4 +24,45 @@ public class empleado {
             return false;
         }
     }
+    public String getApellido() {
+        return apellido;
+    }
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
+    }
+    public String getNombre() {
+        return nombre;
+    }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+    public String getMail() {
+        return mail;
+    }
+    public void setMail(String mail) {
+        this.mail = mail;
+    }
+    public String getTelefono() {
+        return telefono;
+    }
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+    public rol getRol() {
+        return rol;
+    }
+    public void setRol(rol rol) {
+        this.rol = rol;
+    }
+    
+
+    @Override
+    public String toString() {
+        return "Empleado{" +
+            "nombre='" + nombre + '\'' +
+            ", apellido='" + apellido + '\'' +
+            ", mail='" + mail + '\'' +
+            '}';
+    }
+
 }
