@@ -23,6 +23,7 @@ public class gestorCierreOrden {
     private String comentario;
     private ArrayList<String> motivos = new ArrayList<String>();
     private ArrayList<String> motivosSeleccionados = new ArrayList<String>();
+    private ArrayList<String> comentariosMotivos = new ArrayList<String>();
     
     public gestorCierreOrden(){
         empleado empleadoPrueba = new empleado("Juan", "Perez", "juan@gmail.com", "123456789", new rol("Responsable de Inspeccion", "descripcion"));
@@ -135,6 +136,11 @@ public class gestorCierreOrden {
         // Implementar la lógica para tomar la selección del motivo
         System.out.println("Motivo seleccionado: " + motivoSeleccionado);
     }
+    public void tomarComentarioMotivo(String comentarioMotivo) {
+        this.comentariosMotivos.add(comentarioMotivo);
+        // Implementar la lógica para tomar el comentario del motivo
+        System.out.println("Comentario del motivo: " + comentarioMotivo);
+    }
 
     public boolean validarExisteObservacionYMotivo() {
         System.out.println("Comentario: " + this.comentario);
@@ -218,6 +224,8 @@ public class gestorCierreOrden {
                 for (estado estado : estados){
                     if (estado.getAmbito().equals("Sismografo") && estado.getNombreEstado().equals("Fuera de servicio")){
                         // cambiar estado sismografo
+                        // sismografo.setEstado(estado);
+                        // sismografo.setCambioEstado(new cambioEstado(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), null, estado, new motivoFueraServicio(this.comentariosMotivos, this.motivosSeleccionados)));
                         System.out.println("Sismografo actualizado: " + sismografo.getIdSismografo());
                         System.out.println("Fecha seleccionada: " + sismografo.getCambioEstado().getFechaHoraFin());
                     }
@@ -275,6 +283,8 @@ public class gestorCierreOrden {
             );
         });
     }
+
+
     //public ArrayList<ArrayList> ordenarPorFechaFin(ArrayList<ArrayList> ordenes){};
 };
 

@@ -4,11 +4,19 @@ public class cambioEstado {
     private String fechaHoraFin;
     private String fechaHoraInicio;
     private estado estado;
-    
+    private motivoFueraServicio motivoFueraServicio;
+
     public cambioEstado(String fechaHoraFin, String fechaHoraInicio, estado estado) {
         this.fechaHoraFin = fechaHoraFin;
         this.fechaHoraInicio = fechaHoraInicio;
         this.estado = estado;
+    }   
+    
+    public cambioEstado(String fechaHoraFin, String fechaHoraInicio, estado estado, motivoFueraServicio motivoFueraServicio) {
+        this.fechaHoraFin = fechaHoraFin;
+        this.fechaHoraInicio = fechaHoraInicio;
+        this.estado = estado;
+        this.motivoFueraServicio = motivoFueraServicio;
     }
 
     public String getFechaHoraFin() {

@@ -82,12 +82,6 @@ public class interfazCierreOrden {
 
                     mostrarVentanaAveriaUnaPorUna(gestor, gestor.getMotivos(), 0);
                     
-                    
-                    
-
-
-
-                    //SelectorAverias(gestor);
 
 
                 } else {
@@ -145,6 +139,7 @@ public class interfazCierreOrden {
 
          // registrar el comentario
         gestor.tomarSeleccionTM(motivoActual);
+        gestor.tomarComentario(comentario);
         frame.dispose();
         mostrarVentanaAveriaUnaPorUna(gestor, motivos, indice + 1);
     });
@@ -165,21 +160,6 @@ public class interfazCierreOrden {
     frame.setLocationRelativeTo(null);
     frame.setVisible(true);
 }
-
-   /*  public SelectorAverias(gestorCierreOrden gestor) {
-        // Lista fija de averías
-        
-
-        // Crear una ventana por cada avería
-        for (String tipo : gestor.getMotivos()) {
-            crearVentanaAveria(tipo);
-        }
-    }*/
-
-
-    
-
-        
     
     
     

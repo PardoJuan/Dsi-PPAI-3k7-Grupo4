@@ -1,5 +1,7 @@
 package com.k7.dsi.ppai.grupo4.entidades;
-import java.util.ArrayList;
+
+import java.time.LocalDate;
+
 public class sismografo{
     private String fechaAdquisicion;
     private String identificadorSismografo;
@@ -59,27 +61,16 @@ public class sismografo{
         this.estacionSismologica = estacionSismonologica;
     }
 
-    public void setCambioEstado(ArrayList<cambioEstado> cambiosEstado, String fechaHoraActual) {
-        for (cambioEstado cambioEstado : cambiosEstado) {
-            this.buscarCambioEstado(cambioEstado, cambioEstado.getFechaHoraFin());
-        }
-        this.crearCambioEstado(fechaHoraActual);
-
+   
+    
+    public void setFechaHoraFin() {
+        this.cambioEstado.setFechaHoraFin(LocalDate.now().toString());
     }
-    public void buscarCambioEstado(cambioEstado cambioEstado, String fechaHoraActual) {
-        if (cambioEstado.getEstado().equals(this.estadoActual)) {
-            this.setFechaHoraFin(fechaHoraActual);
-
-        } else {
-            this.cambioEstado = null;
-        }
-    }
-    public void setFechaHoraFin(String fechaHoraActual) {
-        this.cambioEstado.setFechaHoraFin(fechaHoraActual);
+    public String getFechaHoraFin() {
+        return this.cambioEstado.getFechaHoraFin();
     }
 
-    public void crearCambioEstado(String fechaHoraActual) {
-        this.cambioEstado = new cambioEstado( fechaHoraActual, null, new estado("Sismografo","Fuera de Servicio"));
+    public void crearCambioEstado() {
     }
     public String getIdSismografo() {
         return this.identificadorSismografo;
